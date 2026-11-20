@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pl"><head><meta charset="utf-8"><title>Noteboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<style>
+body{margin:0;height:100vh;display:flex;flex-direction:column;background:#12141a;color:#d8dbe2;font:14px system-ui,sans-serif}
+header{display:flex;gap:8px;align-items:center;padding:8px 12px;background:#1a1d26}
+button{background:#2a2f3d;color:#d8dbe2;border:0;border-radius:4px;padding:4px 8px;cursor:pointer}
+button:hover{background:#3a4156}button:disabled{opacity:.3;cursor:default}
+input,textarea{background:#1d212c;color:#d8dbe2;border:1px solid #2f3547;border-radius:4px;padding:4px 6px;font:inherit;box-sizing:border-box}
+main{flex:1;min-height:0;display:flex;gap:12px;padding:12px;overflow-x:auto;align-items:flex-start}
+.col{flex:0 0 420px;max-height:100%;display:flex;flex-direction:column;background:#181b24;border-radius:8px;padding:8px}
+.cb{overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.card{background:#232838;border-radius:8px;padding:10px}
+.ch,.cah,.bh,.it{display:flex;gap:6px;align-items:center}
+.ch input,.cah input,.bh input{flex:1;min-width:0;font-weight:600}
+.h{cursor:grab;color:#7b839a;user-select:none}
+.blk{margin-top:8px;padding:6px;border:1px solid #2f3547;border-radius:6px}
+textarea{width:100%;margin-top:6px;resize:none;overflow:hidden}
+.it{margin-top:6px;align-items:flex-start}
+.fs{flex:1;display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+.f{display:flex;gap:2px;align-items:center}
+.f input:first-child{font-weight:600}.f textarea{width:110px;margin:0;line-height:1.3}.f:first-child{flex:1 1 100%}.f:first-child textarea{flex:1;width:auto;font-weight:600}.sp{flex:1}
+a{color:#6ab0ff;text-decoration:none}
+.it.done input{text-decoration:line-through;opacity:.5}
+.ad{margin-top:8px;display:flex;gap:6px}
+.ib{box-shadow:0 -3px 0 #6ab0ff}.ia{box-shadow:0 3px 0 #6ab0ff}
+.col.ib{box-shadow:-3px 0 0 #6ab0ff}.col.ia{box-shadow:3px 0 0 #6ab0ff}
+</style></head><body>
+<header><b>Noteboard</b><button data-a="addc">+ kolumna</button><button data-a="exp">Eksport JSON</button><button data-a="imp">Import JSON</button><input type="file" id="fi" accept=".json" hidden></header>
+<main id="app"></main>
+<script>
+const u=()=>Math.random().toString(36).slice(2,9),ok=m=>confirm(m),U=v=>/^https?:\/\/\S+$/i.test(v.trim());
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S,D,fi=document.getElementById('fi'),app=document.getElementById('app');
+try{S=JSON.parse(localStorage.nb)}catch{}
+if(!S||!Array.isArray(S.cols))S={cols:[{id:u(),name:'Kolumna',cards:[]}]};
+const save=()=>{try{localStorage.nb=JSON.stringify(S)}catch{}};
+const cards=()=>S.cols.flatMap(c=>c.cards),blks=()=>cards().flatMap(k=>k.blocks);
+const lnk=v=>`<a target="_blank" rel="noopener" ${U(v)?`href="${esc(v.trim())}"`:'hidden'}>↗</a>`;
+const fH=f=>`<span class="f"><input data-m="fk" value="${esc(f.k)}" placeholder="pole"><textarea data-m="fv" rows="1" placeholder="wartość">${esc(f.v)}</textarea>${lnk(f.v)}<button data-a="delf">×</button></span>`;
+const iH=i=>`<div class="it${i.done?' done':''}" data-i="${i.id}"><span class="h" draggable="true" data-h="it">⠿</span><input type="checkbox" data-a="done" ${i.done?'checked':''}><div class="fs">${i.fields.map(fH).join('')}</div><button data-a="addf" title="dodaj pole">+</button><button data-a="delit">×</button></div>`;
+const bH=b=>`<div class="blk" data-b="${b.id}"><div class="bh"><span class="h" draggable="true" data-h="blk">⠿</span>${b.hh?'<span class="sp"></span>':`<input data-m="bt" value="${esc(b.title)}">`}<button data-a="hh" title="pokaż/ukryj nagłówek">${b.hh?'T+':'T−'}</button><button data-a="delb">×</button></div>${b.items?b.items.map(iH).join('')+'<div class="ad"><button data-a="addit">+ pozycja</button></div>':`<textarea data-m="tx" rows="3">${esc(b.text)}</textarea>`}</div>`;
+const kH=k=>{return `<div class="card" data-k="${k.id}"><div class="ch"><span class="h" draggable="true" data-h="card">⠿</span><input data-m="kt" value="${esc(k.title)}"><button data-a="tog">${k.collapsed?'▸':'▾'}</button><button data-a="delk">×</button></div>${k.collapsed?'':k.blocks.map(bH).join('')+`<div class="ad"><button data-a="adddesc">+ opis</button><button data-a="addlist">+ lista</button></div>`}</div>`};
+const cH=c=>`<div class="col" data-c="${c.id}"><div class="cah"><span class="h" draggable="true" data-h="col">⠿</span><input data-m="cn" value="${esc(c.name)}"><button data-a="delc">×</button></div><div class="cb">${c.cards.map(kH).join('')}<button data-a="addk">+ karta</button></div></div>`;
+const fit=t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px'},fitK=t=>{const q=getComputedStyle(t),c=fitK.c||(fitK.c=document.createElement('canvas').getContext('2d'));c.font=`${q.fontStyle} ${q.fontWeight} ${q.fontSize} ${q.fontFamily}`;t.style.width=Math.max(Math.ceil(c.measureText(t.value||t.placeholder).width)+20,48)+'px'},fitAll=()=>{app.querySelectorAll('textarea').forEach(fit);app.querySelectorAll('[data-m=fk]').forEach(fitK)};
+const R=()=>{const sc=[...app.querySelectorAll('.col')].map(c=>[c.dataset.c,c.querySelector('.cb').scrollTop]),sl=app.scrollLeft;app.innerHTML=S.cols.map(cH).join('');fitAll();sc.forEach(([id,t])=>{const e=app.querySelector(`[data-c="${id}"] .cb`);if(e)e.scrollTop=t});app.scrollLeft=sl};
+addEventListener('resize',fitAll);
+const ctx=el=>{const g=(s,k)=>el.closest(s)?.dataset[k],c=S.cols.find(x=>x.id==g('.col','c')),k=cards().find(x=>x.id==g('.card','k')),bl=blks().find(x=>x.id==g('.blk','b')),it=bl?.items?.find(x=>x.id==g('.it','i'));return{c,k,bl,it}};
+const A={
+addc:()=>S.cols.push({id:u(),name:'Kolumna',cards:[]}),
+delc:x=>ok('Usunąć kolumnę wraz z zawartością?')&&(S.cols=S.cols.filter(y=>y!=x.c)),
+addk:x=>x.c.cards.push({id:u(),title:'Karta',collapsed:false,blocks:[]}),
+delk:x=>ok('Usunąć kartę?')&&(x.c.cards=x.c.cards.filter(y=>y!=x.k)),
+tog:x=>x.k.collapsed=!x.k.collapsed,
+adddesc:x=>x.k.blocks.push({id:u(),title:'Opis',text:''}),
+addlist:x=>x.k.blocks.push({id:u(),title:'Lista',items:[]}),
+delb:x=>ok('Usunąć blok?')&&(x.k.blocks=x.k.blocks.filter(y=>y!=x.bl)),
+hh:x=>x.bl.hh=!x.bl.hh,
+addit:x=>x.bl.items.push({id:u(),done:false,fields:[{k:'nazwa',v:''}]}),
+delit:x=>ok('Usunąć pozycję?')&&(x.bl.items=x.bl.items.filter(y=>y!=x.it)),
+addf:x=>x.it.fields.push({k:'',v:''}),
+delf:(x,b)=>x.it.fields.splice([...b.parentNode.parentNode.children].indexOf(b.parentNode),1),
+done:(x,b)=>x.it.done=b.checked,
+exp:()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='noteboard-'+new Date().toISOString().slice(0,10)+'.json';a.click()},
+imp:()=>fi.click()};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;A[b.dataset.a](ctx(b),b);save();R()});
+document.addEventListener('input',e=>{const t=e.target,m=t.dataset.m;if(!m)return;const x=ctx(t),v=t.value;
+if(m=='cn')x.c.name=v;else if(m=='kt')x.k.title=v;else if(m=='bt')x.bl.title=v;else if(m=='tx')x.bl.text=v;
+else{const s=t.parentNode,f=x.it.fields[[...s.parentNode.children].indexOf(s)];
+if(m=='fk')f.k=v;else{f.v=v;const a=s.querySelector('a');if(U(v)){a.href=v.trim();a.hidden=false}else{a.removeAttribute('href');a.hidden=true}}}
+t.tagName=='TEXTAREA'&&fit(t);m=='fk'&&fitK(t);save()});
+fi.onchange=()=>{const f=fi.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!Array.isArray(d.cols))throw 0;if(ok('Zastąpić bieżące dane?')){S=d;save();R()}}catch{alert('Błędny plik')}});fi.value=''};
+/* drag & drop */
+const SEL={col:'.col',card:'.card',blk:'.blk',it:'.it'},KEY={col:'c',card:'k',blk:'b',it:'i'},PAR={card:'.col',blk:'.card',it:'.blk'};
+const arrs=t=>t=='col'?[S.cols]:t=='card'?S.cols.map(c=>c.cards):t=='blk'?cards().map(k=>k.blocks):blks().filter(b=>b.items).map(b=>b.items);
+const loc=(t,id)=>{for(const a of arrs(t)){const i=a.findIndex(x=>x.id==id);if(i>=0)return{a,i}}};
+const clr=()=>document.querySelectorAll('.ia,.ib').forEach(x=>x.classList.remove('ia','ib'));
+function tgt(e){const t=D.t,T=e.target;if(!T.closest)return;
+if((t=='blk'||t=='it')&&T.closest('.card')?.dataset.k!=D.card)return;
+const el=T.closest(SEL[t]);
+if(el){if(el.dataset[KEY[t]]==D.id)return;const g=loc(t,el.dataset[KEY[t]]);if(!g)return;const r=el.getBoundingClientRect(),after=t=='col'?e.clientX>r.left+r.width/2:e.clientY>r.top+r.height/2;return{a:g.a,i:g.i+(after?1:0),el,after}}
+const pe=PAR[t]&&T.closest(PAR[t]);if(!pe)return;
+const a=t=='card'?S.cols.find(c=>c.id==pe.dataset.c)?.cards:t=='blk'?cards().find(k=>k.id==pe.dataset.k)?.blocks:blks().find(b=>b.id==pe.dataset.b)?.items;
+return a&&{a,i:a.length}}
+document.addEventListener('dragstart',e=>{const h=e.target.closest?.('[data-h]');if(!h)return;const t=h.dataset.h,el=h.closest(SEL[t]);
+D={t,id:el.dataset[KEY[t]],card:t=='blk'||t=='it'?el.closest('.card').dataset.k:null};
+e.dataTransfer.setData('text/plain',D.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setDragImage(el,10,10)});
+document.addEventListener('dragover',e=>{if(!D)return;clr();const g=tgt(e);if(g){e.preventDefault();g.el&&g.el.classList.add(g.after?'ia':'ib')}});
+document.addEventListener('drop',e=>{if(!D)return;e.preventDefault();clr();const g=tgt(e);
+if(g){const s=loc(D.t,D.id);let i=g.i;if(g.a===s.a&&s.i<i)i--;const[o]=s.a.splice(s.i,1);g.a.splice(i,0,o);save();R()}D=null});
+document.addEventListener('dragend',()=>{clr();D=null});
+document.addEventListener('keydown',e=>{const m=e.target.dataset?.m;if(e.key!='Enter'||e.isComposing||(m!='fv'&&m!='fk'))return;e.preventDefault();const x=ctx(e.target),n={id:u(),done:false,fields:[{k:'nazwa',v:''}]};x.bl.items.splice(x.bl.items.indexOf(x.it)+1,0,n);save();R();const f=app.querySelector(`[data-i="${n.id}"] [data-m=fk]`);f?.focus();f?.select()});
+R();
+</script></body></html>
