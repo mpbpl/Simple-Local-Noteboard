@@ -75,7 +75,7 @@ The app works locally; Pages only gives you a URL.
 
 1. Keep the file named `index.html` in the repository root.
 2. Repository **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch `main`, folder `/ (root)`, Save.
-3. After a short build the page is available at `https://<your-user>.github.io/<repository>/`.
+3. After a short build the page is available at `https://mpbpl.github.io/Simple-Local-Noteboard/`.
 
 Note: data on the Pages address is stored separately from the local copy (different origin). To move a board, use Export JSON and Import JSON.
 
@@ -166,7 +166,7 @@ Aplikacja działa lokalnie; Pages daje tylko adres URL.
 
 1. Zachowaj plik o nazwie `index.html` w katalogu głównym repozytorium.
 2. Repozytorium **Settings → Pages → Build and deployment → Source: Deploy from a branch**, gałąź `main`, folder `/ (root)`, Save.
-3. Po krótkiej budowie strona jest dostępna pod `https://<twoj-uzytkownik>.github.io/<repozytorium>/`.
+3. Po krótkiej budowie strona jest dostępna pod `https://mpbpl.github.io/Simple-Local-Noteboard/`.
 
 Uwaga: dane pod adresem Pages są przechowywane oddzielnie od lokalnej kopii (inne źródło). Aby przenieść tablicę, użyj Eksport JSON i Import JSON.
 
