@@ -38,36 +38,6 @@ Not included: search, sorting, undo.
 - **Use `Export JSON` regularly** and keep the exported file next to the HTML file. `Import JSON` replaces the current board after confirmation.
 - Do not commit your exported JSON files to a public repository if they contain personal data.
 
-### JSON format
-
-```json
-{
-  "cols": [
-    {
-      "id": "a1", "name": "Column",
-      "cards": [
-        {
-          "id": "b2", "title": "Card", "collapsed": false,
-          "blocks": [
-            { "id": "c3", "title": "Description", "text": "Free text" },
-            {
-              "id": "d4", "title": "List", "hh": false,
-              "items": [
-                { "id": "e5", "done": false,
-                  "fields": [ { "k": "name", "v": "Hiking boots" },
-                              { "k": "price", "v": "499" },
-                              { "k": "link", "v": "https://example.com" } ] }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-A block with `items` is a list, a block with `text` is a description. `hh: true` hides the block title. Ids are arbitrary unique strings.
 
 ## Run online with GitHub Pages (optional)
 
@@ -129,36 +99,6 @@ Brak: wyszukiwania, sortowania, cofania zmian.
 - **Regularnie używaj `Eksport JSON`** i trzymaj wyeksportowany plik obok pliku HTML. `Import JSON` zastępuje bieżącą tablicę po potwierdzeniu.
 - Nie dodawaj wyeksportowanych plików JSON do publicznego repozytorium, jeśli zawierają dane osobiste.
 
-#### Format JSON
-
-```json
-{
-  "cols": [
-    {
-      "id": "a1", "name": "Kolumna",
-      "cards": [
-        {
-          "id": "b2", "title": "Karta", "collapsed": false,
-          "blocks": [
-            { "id": "c3", "title": "Opis", "text": "Dowolny tekst" },
-            {
-              "id": "d4", "title": "Lista", "hh": false,
-              "items": [
-                { "id": "e5", "done": false,
-                  "fields": [ { "k": "nazwa", "v": "Buty turystyczne" },
-                              { "k": "cena", "v": "499" },
-                              { "k": "link", "v": "https://example.com" } ] }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-Blok z `items` jest listą, blok z `text` jest opisem. `hh: true` ukrywa tytuł bloku. Identyfikatory to dowolne unikalne ciągi znaków.
 
 ### Uruchomienie online przez GitHub Pages (opcjonalnie)
 
