@@ -6,8 +6,8 @@ A single-file, offline kanban-style noteboard. Open one HTML file in your browse
 
 Columns hold cards; cards hold any number of text blocks (descriptions) and lists; list items hold free-form fields (name, price, link, deadline, anything you define).
 
-<!-- Add a screenshot: put it at docs/screenshot.png and keep the line below -->
-![Screenshot](docs/screenshot.png)
+<img width="1752" height="877" alt="screen noteboard" src="https://github.com/user-attachments/assets/efc7acb9-9ac8-408f-a3e7-573425db3607" />
+
 
 ## Features
 
@@ -87,7 +87,7 @@ One file, vanilla HTML/CSS/JS, no build step. The whole state is a single object
 
 MIT. Use it however you like, modify and share it; just keep the copyright notice and license text, which credits the original author. See [LICENSE](LICENSE).
 
-Original project by <YOUR NAME>.
+Original project by MPBPL.
 
 ---
 
@@ -96,6 +96,8 @@ Original project by <YOUR NAME>.
 Jednoplikowy, offline'owy noteboard w układzie kanban. Wystarczy otworzyć jeden plik HTML w przeglądarce: bez instalacji, serwera, zależności i dostępu do sieci.
 
 Kolumny zawierają karty; karty zawierają dowolną liczbę bloków tekstowych (opisów) i list; pozycje list mają dowolne pola (nazwa, cena, link, termin, cokolwiek zdefiniujesz).
+
+<img width="1752" height="877" alt="screen noteboard" src="https://github.com/user-attachments/assets/2a8cbf84-529f-452a-932e-3a42c8abe8f5" />
 
 
 ### Funkcje
@@ -176,6 +178,6 @@ Jeden plik, czysty HTML/CSS/JS, bez budowania. Cały stan to jeden obiekt `S` re
 
 MIT. Używaj, modyfikuj i udostępniaj dowolnie; zachowaj tylko informację o prawach autorskich i tekst licencji, który wskazuje oryginalnego autora. Zobacz [LICENSE](LICENSE).
 
-Oryginalny projekt: <TWOJE IMIĘ LUB NICK>.
+Oryginalny projekt: MPBPL
 
 [↑ English](#simple-local-noteboard)
